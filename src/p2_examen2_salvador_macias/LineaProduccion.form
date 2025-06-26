@@ -36,7 +36,7 @@
                                       <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                                       <Component id="btnCargar" min="-2" pref="120" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
-                                      <Component id="btnIniciar" min="-2" pref="139" max="-2" attributes="0"/>
+                                      <Component id="btnIniciar" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="pg_ensamblaje" alignment="0" max="32767" attributes="0"/>
                                   <Component id="pg_ciclos" alignment="0" max="32767" attributes="0"/>
@@ -145,7 +145,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Helvetica Neue" size="14" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Iniciar"/>
+        <Property name="text" type="java.lang.String" value="Iniciar simulacion"/>
       </Properties>
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnIniciarMouseClicked"/>

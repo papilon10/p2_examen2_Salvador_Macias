@@ -4,6 +4,13 @@
  */
 package p2_examen2_salvador_macias;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Apple
@@ -54,7 +61,7 @@ public class LineaProduccion extends javax.swing.JFrame {
         });
 
         btnIniciar.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        btnIniciar.setText("Iniciar");
+        btnIniciar.setText("Iniciar simulacion");
         btnIniciar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnIniciarMouseClicked(evt);
@@ -93,7 +100,7 @@ public class LineaProduccion extends javax.swing.JFrame {
                                         .addGap(43, 43, 43)
                                         .addComponent(btnCargar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(118, 118, 118)
-                                        .addComponent(btnIniciar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(btnIniciar))
                                     .addComponent(pg_ensamblaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(pg_ciclos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -154,7 +161,45 @@ public class LineaProduccion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCargarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCargarMouseClicked
-   
+        JFileChooser fileChooser = new JFileChooser();
+        int resultado = fileChooser.showOpenDialog(this);
+
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                etapas.clear();
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] partes = linea.split(",");
+                    String nombre = partes[0].trim();
+                    int unidades = Integer.parseInt(partes[1].trim());
+                    int tiempo = Integer.parseInt(partes[2].trim());
+                    etapas.add(new etapa(nombre, unidades, tiempo));
+                }
+
+                if (etapas.size() >= 3) {
+                    pg_ensamblaje.setMaximum(etapas.get(0).getUnidadesPorProcesar());
+                    pg_pintura.setMaximum(etapas.get(1).getUnidadesPorProcesar());
+                    pg_empaquetado.setMaximum(etapas.get(2).getUnidadesPorProcesar());
+                    pg_ciclos.setMaximum(4);
+                    pg_ciclos.setValue(0);
+                    lbl_ciclos.setText("Ciclo actual: Día 1");
+
+                    pg_ensamblaje.setValue(0);
+                    pg_pintura.setValue(0);
+                    pg_empaquetado.setValue(0);
+
+                    JOptionPane.showMessageDialog(this, "se cargo el archivo correctamente");
+                } else {
+                    JOptionPane.showMessageDialog(this, "cantidad de etapas insuficentes para cargar archivo");
+                }
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "error" );
+            }
+        }
+
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCargarMouseClicked
 
@@ -164,7 +209,7 @@ public class LineaProduccion extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCargarActionPerformed
 
     private void btnIniciarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIniciarMouseClicked
-    
+
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
@@ -219,4 +264,6 @@ public class LineaProduccion extends javax.swing.JFrame {
     private javax.swing.JProgressBar pg_pintura;
     private javax.swing.JLabel pintura;
     // End of variables declaration//GEN-END:variables
+        private ArrayList<etapa> etapas = new ArrayList<>();
+
 }
