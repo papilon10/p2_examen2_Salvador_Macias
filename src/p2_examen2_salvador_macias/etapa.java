@@ -19,7 +19,6 @@ public class etapa {
         this.nombre = nombre;
         this.unidadesPorProcesar = unidadesPorProcesar;
         this.tiempoPorUnidad = tiempoPorUnidad;
-        this.unidadesProcesadas = 0;
     }
 
     public String getNombre() {

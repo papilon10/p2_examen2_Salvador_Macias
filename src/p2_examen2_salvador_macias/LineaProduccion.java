@@ -212,12 +212,12 @@ public class LineaProduccion extends javax.swing.JFrame {
     private void btnIniciarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIniciarMouseClicked
         if (etapas.size() < 3) {
             JOptionPane.showMessageDialog(this, "no hay un archivo cargado ");
-            
+            return;
         }
 
         etapa ensamblaje = etapas.get(0);
-       // etapa pintura = etapas.get(1);
-       // etapa empaquetado = etapas.get(2);
+        etapa pintura = etapas.get(1);
+        etapa empaquetado = etapas.get(2);
 
         final boolean[] esDia = {true};
 
@@ -232,7 +232,7 @@ public class LineaProduccion extends javax.swing.JFrame {
                 });
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -256,13 +256,50 @@ public class LineaProduccion extends javax.swing.JFrame {
                 }
             }
         });
+
+        Thread hiloPintura = new Thread(() -> {
+            while (pintura.getUnidadesProcesadas() < pintura.getUnidadesPorProcesar()) {
+                if (esDia[0] && ensamblaje.getUnidadesProcesadas() > pintura.getUnidadesProcesadas()) {
+                    try {
+                        Thread.sleep(pintura.getTiempoPorUnidad() * 500);
+                    } catch (InterruptedException e) {
+                    }
+                    pintura.setUnidadesProcesadas(pintura.getUnidadesProcesadas() + 1);
+                    pg_pintura.setValue(pintura.getUnidadesProcesadas());
+                } else {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
         
         
-        
-        
+          Thread hiloEmpaquetado = new Thread(() -> {
+            while (empaquetado.getUnidadesProcesadas() < empaquetado.getUnidadesPorProcesar()) {
+                if (esDia[0] && pintura.getUnidadesProcesadas() > empaquetado.getUnidadesProcesadas()) {
+                    try {
+                        Thread.sleep(empaquetado.getTiempoPorUnidad() * 500);
+                    } catch (InterruptedException e) {
+                    }
+                    empaquetado.setUnidadesProcesadas(empaquetado.getUnidadesProcesadas() + 1);
+                    pg_empaquetado.setValue(empaquetado.getUnidadesProcesadas());
+                } else {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
 
         hiloCiclo.start();
         hiloEnsamblaje.start();
+        hiloPintura.start();
+        hiloEmpaquetado.start();
+        
+        
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
