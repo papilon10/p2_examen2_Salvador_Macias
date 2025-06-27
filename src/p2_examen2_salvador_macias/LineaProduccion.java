@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -196,7 +197,7 @@ public class LineaProduccion extends javax.swing.JFrame {
                 }
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "error" );
+                JOptionPane.showMessageDialog(this, "error");
             }
         }
 
@@ -209,7 +210,59 @@ public class LineaProduccion extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCargarActionPerformed
 
     private void btnIniciarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIniciarMouseClicked
+        if (etapas.size() < 3) {
+            JOptionPane.showMessageDialog(this, "no hay un archivo cargado ");
+            
+        }
 
+        etapa ensamblaje = etapas.get(0);
+       // etapa pintura = etapas.get(1);
+       // etapa empaquetado = etapas.get(2);
+
+        final boolean[] esDia = {true};
+
+        Thread hiloCiclo = new Thread(() -> {
+            for (int ciclo = 1; ciclo <= 4; ciclo++) {
+                esDia[0] = (ciclo % 2 != 0);
+
+                int finalCiclo = ciclo;
+                SwingUtilities.invokeLater(() -> {
+                    lbl_ciclos.setText("Ciclo actual: " + (esDia[0] ? "Día " : "Noche ") + ((finalCiclo + 1) / 2));
+                    pg_ciclos.setValue(finalCiclo);
+                });
+
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+
+        Thread hiloEnsamblaje = new Thread(() -> {
+            while (ensamblaje.getUnidadesProcesadas() < ensamblaje.getUnidadesPorProcesar()) {
+                if (!esDia[0]) {
+                    try {
+                        Thread.sleep(ensamblaje.getTiempoPorUnidad() * 500);
+                    } catch (InterruptedException e) {
+                    }
+                    ensamblaje.setUnidadesProcesadas(ensamblaje.getUnidadesProcesadas() + 1);
+                    pg_ensamblaje.setValue(ensamblaje.getUnidadesProcesadas());
+                } else {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        
+        
+        
+        
+
+        hiloCiclo.start();
+        hiloEnsamblaje.start();
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
